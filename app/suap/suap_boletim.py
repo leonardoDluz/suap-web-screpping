@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from ..dtos.suap_login_dto import SuapLoginDTO
 from .suap import Suap
 import pandas as pd
-
+import json
 
 class SuapBoletim(Suap):
     def __init__(self, suap_login_info: SuapLoginDTO) -> None:
@@ -41,10 +41,10 @@ class SuapBoletim(Suap):
 
             table_df = pd.read_html(driver.page_source)[1]
             table_df = self.__sanitize_table(table_df)
-            # table_dict_list = self.__to_dict(table_df)
-            # print(table_dict_list)  
 
-            return table_df.to_dict('split', index=False)
+            table_json = table_df.to_json(orient="records", index=False)
+            # print(table_json)
+            return json.loads(table_json)
 
         except Exception as e:
             print(e)
@@ -70,11 +70,9 @@ class SuapBoletim(Suap):
 
             last_index = table_df.index[-1]
             table_df.drop(last_index, axis=0, inplace=True)
+
             return table_df
 
         except Exception as e:
             print(e)
-
-    
-
-
+                
